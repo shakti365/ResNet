@@ -14,7 +14,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("data_path", "../data", "Path to store dataset")
 flags.DEFINE_boolean("debug", False, "Runs in debug mode")
 flags.DEFINE_integer("batch_size", 256, "Batch size")
-flags.DEFINE_string("model_path", "../model/model_10.pth", "model path")
+flags.DEFINE_string("model_path", "../model/model_2.pth", "model path")
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -51,8 +51,8 @@ def get_transform():
     return transform
 
 def accuracy(true,pred):
-    acc = (true.argmax(-1) == pred.argmax(-1)).float().detach().numpy()
-    return float(100 * acc.sum() / len(acc))
+    acc = (true == pred.argmax(-1)).float().detach().cpu().numpy()
+    return float(100 * acc.sum() / float(len(acc)))
 
 def main(argv):
     if FLAGS.debug:
@@ -83,14 +83,14 @@ def main(argv):
             inputs = inputs.to(device)
             labels = labels.to(device)
 
-        with torch.no_grad:
+        with torch.no_grad():
             outputs = model(inputs)
 
         acc_batch = accuracy(labels, outputs)
         total_acc.append(acc_batch)
-
-    avg_acc = sum(total_acc) / len(total_acc)
-    logging.info(f"tAverage Accuracy: {avg_acc}")
+        logging.info(f"Batch Accuracy: {acc_batch}")
+    avg_acc = sum(total_acc) / float(len(total_acc))
+    logging.info(f"Average Accuracy: {avg_acc}")
 
 
 if __name__ == "__main__":
