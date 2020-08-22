@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 from absl import app
 from absl import flags
 from absl import logging
+from sklearn.metrics import classification_report
 
 from resnet import Net
 
@@ -19,6 +20,8 @@ flags.DEFINE_string("model_path", "../model/model_2.pth", "model path")
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+classes = ('plane', 'car', 'bird', 'cat',
+           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 def download_test_data(data_path, transform=None):
     """
     Downloads the CIFAR10 dataset to data_path.
@@ -74,10 +77,14 @@ def main(argv):
         model = model.to(device)
 
     total_acc = []
+    all_targets = []
+    all_pred = []
     for i, data in enumerate(testloader):
 
         # Take the inputs and labels
         inputs, labels = data
+
+        all_targets.extend(labels.detach().numpy())
 
         if torch.cuda.is_available():
             inputs = inputs.to(device)
@@ -86,11 +93,14 @@ def main(argv):
         with torch.no_grad():
             outputs = model(inputs)
 
+        all_pred.extend(outputs.argmax(-1).detach().cpu().numpy())
+
         acc_batch = accuracy(labels, outputs)
         total_acc.append(acc_batch)
         logging.info(f"Batch Accuracy: {acc_batch}")
     avg_acc = sum(total_acc) / float(len(total_acc))
     logging.info(f"Average Accuracy: {avg_acc}")
+    logging.info(classification_report(all_targets, all_pred,target_names=classes))
 
 
 if __name__ == "__main__":
