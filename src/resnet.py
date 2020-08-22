@@ -134,14 +134,11 @@ class Net(nn.Module):
     Creates the architecture of resnet 18 model with respect to CIFAR-10 dataset taking input dim as 3,32,32
     and return the output dim of (1,10)
     """
-    def __init__(self, input_channel):
-        """
+    def __init__(self):
 
-        :param input_channel: input dim of image
-        """
         super(Net, self).__init__()
 
-        self.layer1 = ResnetBlock(input_channel, 16,kernel_size=3,stride=1, padding=1)
+        self.layer1 = ResnetBlock(3, 16,kernel_size=3,stride=1, padding=1)
 
         # for resnet block 1 to 3
         self.resnet_1_1 = ResnetBlock(16, 16, kernel_size=3, stride=1, padding=1)
@@ -256,7 +253,7 @@ if __name__=="__main__":
     x = x.reshape((1,x.shape[0],x.shape[1],x.shape[2]))
 
     # create model
-    model = Net(x.shape[1])
+    model = Net()
 
     # test the architeture of model
     output = model(torch.FloatTensor(x))
