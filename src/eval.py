@@ -20,8 +20,8 @@ flags.DEFINE_string("model_path", "../model/model_2.pth", "model path")
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-classes = ('plane', 'car', 'bird', 'cat',
-           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+classes = ['plane', 'car', 'bird', 'cat',
+           'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 def download_test_data(data_path, transform=None):
     """
     Downloads the CIFAR10 dataset to data_path.
@@ -98,6 +98,7 @@ def main(argv):
         acc_batch = accuracy(labels, outputs)
         total_acc.append(acc_batch)
         logging.info(f"Batch Accuracy: {acc_batch}")
+
     avg_acc = sum(total_acc) / float(len(total_acc))
     logging.info(f"Average Accuracy: {avg_acc}")
     logging.info(classification_report(all_targets, all_pred,target_names=classes))
