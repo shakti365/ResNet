@@ -40,6 +40,7 @@ def download_data(data_path, transform=None):
 
     return trainloader, testloader
 
+
 def get_transform():
     # Perform data augmentation
     # Pad with 4 pixels on all the sides
@@ -96,9 +97,6 @@ def main(argv):
 
         avg_loss = sum(epoch_loss) / len(epoch_loss) 
         logging.info(f"Epoch: {epoch}\tAverage Loss: {avg_loss}")
-
-
-
 
 
 if __name__ == "__main__":

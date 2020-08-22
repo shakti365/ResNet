@@ -164,7 +164,7 @@ class Net(nn.Module):
 
         # Avg pooling and Fully conn layer
         self.pooling = pooling(3)
-        self.fc = fully_connected(256,10)
+        self.fc = fully_connected(256, 10)
 
 
     def forward(self, x):
@@ -239,7 +239,8 @@ class Net(nn.Module):
 
         # pool
         x = self.pooling(x)
-        x = x.view(1,-1)
+        x = x.view(-1, 256)
+        
         x = self.fc(x)
 
         return x
