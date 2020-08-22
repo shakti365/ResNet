@@ -240,7 +240,7 @@ class Net(nn.Module):
         # pool
         x = self.pooling(x)
         x = x.view(-1, 256)
-        
+
         x = self.fc(x)
 
         return x
