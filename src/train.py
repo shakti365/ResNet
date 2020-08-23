@@ -140,7 +140,6 @@ def main(argv):
             epoch_loss.append(loss.item())
             if i % 1000 == 0:
                 logging.info(f"Epoch: {epoch}\tIteration: {i}\tLoss: {loss}")
-            break
 
         # Log train set metrics
         train_avg_loss = sum(epoch_loss) / len(epoch_loss)
@@ -168,7 +167,6 @@ def main(argv):
 
             # Log statistics
             val_epoch_loss.append(loss.item())
-            break
 
         # Log validation set metrics
         val_avg_loss = sum(val_epoch_loss) / len(val_epoch_loss)
