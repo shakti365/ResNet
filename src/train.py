@@ -6,7 +6,7 @@ from absl import flags
 from absl import logging
 import os
 from resnet import Net
-
+from matplotlib import pyplot as plt
 torch.manual_seed(0)
 
 FLAGS = flags.FLAGS
@@ -17,6 +17,8 @@ flags.DEFINE_integer("batch_size", 256, "Batch size")
 flags.DEFINE_integer("epochs", 3, "Number of epochs to run the training")
 flags.DEFINE_float("learning_rate", 0.001, "Learning rate")
 flags.DEFINE_string("save_model_dir", "../model", "Path to dir to save model")
+flags.DEFINE_string("save_log_dir", "../logs", "Path to dir to save logs")
+
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -74,6 +76,9 @@ def main(argv):
     if not os.path.exists(FLAGS.save_model_dir):
         os.makedirs(FLAGS.save_model_dir)
 
+    if not os.path.exists(FLAGS.save_log_dir):
+        os.makedirs(FLAGS.save_log_dir)
+
     # Transform and Load the dataset
     transform = get_transform()
     trainloader, valloader = download_data(FLAGS.data_path, transform)
@@ -87,6 +92,8 @@ def main(argv):
     loss_fn = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=FLAGS.learning_rate)
 
+    train_loss = []
+    val_loss = []
     for epoch in range(FLAGS.epochs):
 
         epoch_loss = []
@@ -114,6 +121,13 @@ def main(argv):
 
         avg_loss = sum(epoch_loss) / len(epoch_loss) 
         logging.info(f"Epoch: {epoch}\tAverage Loss: {avg_loss}")
+
+        train_loss.append(avg_loss)
+        plt.xlabel("Epoch")
+        plt.ylabel('Train loss')
+        plt.plot([i for i in range(epoch+1)],train_loss)
+        plt.savefig(os.path.join(FLAGS.save_log_dir,'Train_loss.jpg'))
+        plt.close()
 
         # get val loss
         val_epoch_loss = []
@@ -147,6 +161,12 @@ def main(argv):
                 'loss': val_avg_loss},  os.path.join(FLAGS.save_model_dir, "model_{}.pth".format(epoch)))
             last_val_loss = val_avg_loss
 
+        val_loss.append(val_avg_loss)
+        plt.xlabel("Epoch")
+        plt.ylabel('Val loss')
+        plt.plot([i+1 for i in range(epoch+1)], val_loss)
+        plt.savefig(os.path.join(FLAGS.save_log_dir,'Val_loss.jpg'))
+        plt.close()
 
     "------------------------FINISHED TRAINING--------------------------"
 
